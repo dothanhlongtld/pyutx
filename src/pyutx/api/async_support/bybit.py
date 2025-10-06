@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 
-from ...errors import Error
+from ...errors import Error, RateLimitError
 from .clients import APIClient
 
 
@@ -31,43 +31,52 @@ class BybitUSDMClient(APIClient):
         }
 
     async def get_candles(self, symbol, timeframe, since=None, limit=100):
-        mapped_timeframe = self.timeframe_mapping.get(timeframe, None)
-        if mapped_timeframe is None:
-            raise ValueError(f"Unsupported timeframe: {timeframe}")
+        try:
+            mapped_timeframe = self.timeframe_mapping.get(timeframe, None)
+            if mapped_timeframe is None:
+                raise ValueError(f"Unsupported timeframe: {timeframe}")
 
-        endpoint = "/v5/market/kline"
-        params = {
-            "category": "linear",
-            "symbol": symbol,
-            "interval": mapped_timeframe,
-            "limit": limit,
-        }
+            endpoint = "/v5/market/kline"
+            params = {
+                "category": "linear",
+                "symbol": symbol,
+                "interval": mapped_timeframe,
+                "limit": limit,
+            }
 
-        if since is not None:
-            params["start"] = since
+            if since is not None:
+                params["start"] = since
 
-        response = await self.http_client.get(endpoint, params=params)
-        response.raise_for_status()
+            response = await self.http_client.get(endpoint, params=params)
+            response.raise_for_status()
 
-        response_data = response.json()
+            response_data = response.json()
 
-        if response_data.get("retCode") != 0:
-            raise Error(
-                int(response_data["retCode"]),
-                response_data.get("ret_msg", "Unknown error"),
-            )
+            if response_data.get("retCode") != 0:
+                self.__handle_error(
+                    int(response_data["retCode"]),
+                    response_data.get("ret_msg", None),
+                )
 
-        return [
-            [
-                int(candle[0]),  # Open time
-                float(candle[1]),  # Open
-                float(candle[2]),  # High
-                float(candle[3]),  # Low
-                float(candle[4]),  # Close
-                float(candle[5]),  # Volume
+            return [
+                [
+                    int(candle[0]),  # Open time
+                    float(candle[1]),  # Open
+                    float(candle[2]),  # High
+                    float(candle[3]),  # Low
+                    float(candle[4]),  # Close
+                    float(candle[5]),  # Volume
+                ]
+                for candle in response_data.get("result").get("list", [])[::-1]
             ]
-            for candle in response_data.get("result").get("list", [])[::-1]
-        ]
+        except Exception as e:
+            raise Error(-1, str(e)) from e
 
     async def close(self) -> None:
         await self.http_client.aclose()
+
+    def __handle_error(self, code: int, msg: str) -> None:
+        if code == 10006:
+            raise RateLimitError(code, msg)
+
+        raise Error(int(code), msg or "Unknown error")

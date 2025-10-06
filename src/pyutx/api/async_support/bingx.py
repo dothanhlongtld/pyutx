@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 
-from ...errors import Error
+from ...errors import Error, RateLimitError
 from .clients import APIClient
 
 
@@ -53,9 +53,9 @@ class BingXUSDMClient(APIClient):
         response_data = response.json()
 
         if response_data.get("code") != 0:
-            raise Error(
+            self.__handle_error(
                 int(response_data["code"]),
-                response_data.get("msg", "Unknown error"),
+                response_data.get("msg", None),
             )
 
         return [
@@ -72,3 +72,8 @@ class BingXUSDMClient(APIClient):
 
     async def close(self) -> None:
         await self.http_client.aclose()
+
+    def __handle_error(self, code: int, msg: str) -> None:
+        if code == 100410:
+            raise RateLimitError(code, msg)
+        raise Error(int(code), msg or "Unknown error")

@@ -1,6 +1,6 @@
-from httpx import AsyncClient
+from httpx import AsyncClient, HTTPStatusError
 
-from ...errors import Error
+from ...errors import Error, RateLimitError
 from .clients import APIClient
 
 
@@ -70,5 +70,9 @@ class BinanceUSDMClient(APIClient):
                 ]
                 for item in response_data
             ]
+        except HTTPStatusError as http_err:
+            if http_err.response.status_code == 429:
+                raise RateLimitError(429, str(http_err)) from http_err
+            raise Error(http_err.response.status_code, str(http_err)) from http_err
         except Exception as e:
             raise Error(-1, str(e)) from e

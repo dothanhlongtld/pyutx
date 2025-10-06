@@ -17,7 +17,7 @@ async def test_okx():
 async def test_binance_usdm():
     binance_usdm = apyutx("binance_usdm", config={"demo": True})
 
-    candles = await binance_usdm.get_candles("BTCUSDT", "1h", limit=100)
+    candles = await binance_usdm.get_candles("BTCUSDTe", "1h", limit=100)
 
     await binance_usdm.close()
 
@@ -48,4 +48,4 @@ async def test_bingxusdm():
 
 
 if __name__ == "__main__":
-    asyncio.run(test_bingxusdm())
+    asyncio.run(test_binance_usdm())

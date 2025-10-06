@@ -1,6 +1,6 @@
 from httpx import AsyncClient
 
-from ...errors import Error
+from ...errors import Error, RateLimitError
 from .clients import APIClient
 
 
@@ -54,7 +54,7 @@ class OKXClient(APIClient):
 
         code = response_data.get("code")
         if code != "0":
-            raise Error(int(code), response_data.get("msg", "Unknown error"))
+            self.__handle_error(int(code), response_data.get("msg", None))
 
         return [
             [
@@ -67,3 +67,9 @@ class OKXClient(APIClient):
             ]
             for candle in response_data.get("data", [])[::-1]
         ]
+
+    def __handle_error(self, code: int, msg: str) -> None:
+        if code == 50011:
+            raise RateLimitError(code, msg)
+
+        raise Error(int(code), msg or "Unknown error")
