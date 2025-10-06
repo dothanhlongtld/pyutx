@@ -19,6 +19,4 @@ TIMEFRAME = Literal[
     "3M",
 ]
 
-TRADING_PLATFORM = Literal[
-    "binance", "binanceusdm", "okx", "bybit_linear_futures", "bingx"
-]
+TRADING_PLATFORM = Literal["binance", "binanceusdm", "okx", "bybitusdm", "bingxusdm"]

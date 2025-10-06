@@ -4,7 +4,7 @@ from ...errors import Error
 from .clients import APIClient
 
 
-class BingXClient(APIClient):
+class BingXUSDMClient(APIClient):
     def __init__(self, config={}):
         super().__init__(config)
 

@@ -1,10 +1,10 @@
 import asyncio
 
-from src.pyutx.api.async_support.factories import get_api_client
+from src.pyutx import apyutx
 
 
 async def test_okx():
-    okx = get_api_client("okx", demo=True)
+    okx = apyutx("okx", config={"demo": True})
 
     candles = await okx.get_candles("BTC-USDT-SWAP", "1h", limit=100)
 
@@ -15,7 +15,7 @@ async def test_okx():
 
 
 async def test_binance_usdm():
-    binance_usdm = get_api_client("binance_usdm", demo=True)
+    binance_usdm = apyutx("binance_usdm", config={"demo": True})
 
     candles = await binance_usdm.get_candles("BTCUSDT", "1h", limit=100)
 
@@ -25,8 +25,8 @@ async def test_binance_usdm():
     print(len(candles))
 
 
-async def test_bybit_linear_futures():
-    bybit = get_api_client("bybit_linear_futures", demo=True)
+async def test_bybit_usdm():
+    bybit = apyutx("bybitusdm", config={"demo": True})
 
     candles = await bybit.get_candles("BTCUSDT", "1h", limit=100)
 
@@ -36,8 +36,8 @@ async def test_bybit_linear_futures():
     print(len(candles))
 
 
-async def test_bingx():
-    bingx = get_api_client("bingx", config={"demo": True})
+async def test_bingxusdm():
+    bingx = apyutx("bingxusdm", config={"demo": True})
 
     candles = await bingx.get_candles("BTC-USDT", "1h", limit=100, since=1759590000000)
 
@@ -48,4 +48,4 @@ async def test_bingx():
 
 
 if __name__ == "__main__":
-    asyncio.run(test_bingx())
+    asyncio.run(test_bingxusdm())

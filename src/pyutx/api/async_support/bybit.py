@@ -4,7 +4,7 @@ from ...errors import Error
 from .clients import APIClient
 
 
-class BybitLinearFuturesClient(APIClient):
+class BybitUSDMClient(APIClient):
     def __init__(self, config: dict = {}):
         super().__init__(config)
 

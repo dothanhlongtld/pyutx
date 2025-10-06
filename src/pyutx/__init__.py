@@ -12,13 +12,13 @@ def apyutx(trading_platform: TRADING_PLATFORM, config: dict = {}) -> APIClient:
             from .api.async_support.binance import BinanceUSDMClient
 
             return BinanceUSDMClient(config)
-        case "bybit_linear_futures":
-            from .api.async_support.bybit import BybitLinearFuturesClient
+        case "bybitusdm":
+            from .api.async_support.bybit import BybitUSDMClient
 
-            return BybitLinearFuturesClient(config)
-        case "bingx":
-            from .api.async_support.bingx import BingXClient
+            return BybitUSDMClient(config)
+        case "bingxusdm":
+            from .api.async_support.bingx import BingXUSDMClient
 
-            return BingXClient(config)
+            return BingXUSDMClient(config)
         case _:
             raise ValueError(f"Unsupported trading platform: {trading_platform}")
