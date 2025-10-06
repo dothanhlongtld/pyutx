@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyutx"
-version = "0.1.1"
+version = "0.1.2"
 authors = [{ name = "Long Do", email = "dothanhlongtld@gmail.com" }]
 description = "Unified Trading eXecution"
 readme = "README.md"
