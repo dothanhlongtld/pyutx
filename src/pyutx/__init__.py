@@ -8,7 +8,7 @@ def apyutx(trading_platform: TRADING_PLATFORM, config: dict = {}) -> APIClient:
             from .api.async_support.okx import OKXClient
 
             return OKXClient(config)
-        case "binance_usdm":
+        case "binanceusdm":
             from .api.async_support.binance import BinanceUSDMClient
 
             return BinanceUSDMClient(config)
